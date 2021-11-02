@@ -73,10 +73,11 @@ ASTPPUSER_MYSQL_PASSWORD=`echo "$(genpasswd 20)" | sed s/./*/5`
 #Fetch OS Distribution
 get_linux_distribution ()
 { 
-        V1=`cat /etc/*release | head -n1 | tail -n1 | cut -c 14- | cut -c1-18`
+        V1=`cat /etc/*release | head -n1 | tail -n1 | cut -c 14- | cut -c1-16`
         V2=`cat /etc/*release | head -n7 | tail -n1 | cut -c 14- | cut -c1-14`
-        if [[ $V1 = "Debian GNU/Linux 9" ]]; then
+        if [[ $V1 = "Debian GNU/Linux" ]]; then
                 DIST="DEBIAN"
+                DEBVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d = -f 2)
         else if [[ $V2 = "CentOS Linux 7" ]]; then
                 DIST="CENTOS"
         else
@@ -345,9 +346,9 @@ install_freeswitch ()
                 echo "Installing FREESWITCH"
                 sleep 5
                 apt-get install -y gnupg2
-                wget -O - https://files.freeswitch.org/repo/deb/freeswitch-1.8/fsstretch-archive-keyring.asc | apt-key add -
-                echo "deb http://files.freeswitch.org/repo/deb/freeswitch-1.8/ stretch main" > /etc/apt/sources.list.d/freeswitch.list
-                echo "deb-src http://files.freeswitch.org/repo/deb/freeswitch-1.8/ stretch main" >> /etc/apt/sources.list.d/freeswitch.list
+                wget -O - https://files.freeswitch.org/repo/deb/freeswitch-1.8/freeswitch-archive-keyring.gpg | apt-key add -
+                echo "deb http://files.freeswitch.org/repo/deb/freeswitch-1.8/ $DEBVERSION main" > /etc/apt/sources.list.d/freeswitch.list
+                echo "deb-src http://files.freeswitch.org/repo/deb/freeswitch-1.8/ $DEBVERSION main" >> /etc/apt/sources.list.d/freeswitch.list
                 apt-get update && apt-get install -y freeswitch-meta-all
                 echo "FREESWITCH installed successfully. . ."
         elif  [ ${DIST} = "CENTOS" ]; then
